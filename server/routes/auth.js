@@ -9,8 +9,6 @@ const User = require('../models/User');
 const sendOtpEmail = require('../utils/sendOtpEmail');
 const sendWelcomeEmail = require('../utils/sendWelcomeEmail');
 
-
-// Helper to generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };

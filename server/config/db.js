@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const dns =require('dns')
+const dns = require('dns')
 
 const connectDB = async () => {
   try {
