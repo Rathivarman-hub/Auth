@@ -10,10 +10,11 @@ passport.use(new GoogleStrategy({
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
+      console.log('Google Profile:', profile.id, profile.emails?.[0]?.value);
       let user = await User.findOne({ googleId: profile.id });
 
       if (!user) {
-        user = await User.findOne({ email: profile.emails[0].value });
+        user = await User.findOne({ email: profile.emails?.[0]?.value });
 
         if (user) {
           user.googleId = profile.id;
@@ -23,13 +24,14 @@ passport.use(new GoogleStrategy({
           user = await User.create({
             googleId: profile.id,
             name: profile.displayName,
-            email: profile.emails[0].value,
+            email: profile.emails?.[0]?.value,
             isVerified: true
           });
         }
       }
       return done(null, user);
     } catch (err) {
+      console.error('Passport Google Strategy Error:', err);
       return done(err, null);
     }
   }

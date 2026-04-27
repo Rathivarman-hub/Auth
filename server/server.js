@@ -31,8 +31,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    secure: false, // Set to true if using HTTPS
+    sameSite: 'lax',
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());

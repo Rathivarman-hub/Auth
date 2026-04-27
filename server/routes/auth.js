@@ -60,11 +60,28 @@ router.post('/login', async (req, res) => {
 // Google Auth
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  const token = generateToken(req.user._id);
-  res.cookie('token', token, { httpOnly: true, sameSite: 'lax' });
-  res.redirect(process.env.CLIENT_URL || 'http://localhost:3000');
-});
+router.get('/google/callback', 
+  passport.authenticate('google', { 
+    failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=oauth_failed` 
+  }), 
+  (req, res) => {
+    try {
+      if (!req.user) {
+        return res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=no_user`);
+      }
+      const token = generateToken(req.user._id);
+      res.cookie('token', token, { 
+        httpOnly: true, 
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      });
+      res.redirect(process.env.CLIENT_URL || 'http://localhost:5173');
+    } catch (error) {
+      console.error('Google Auth Error:', error);
+      res.redirect(`${process.env.CLIENT_URL || 'http://localhost:5173'}/login?error=server_error`);
+    }
+  }
+);
 
 // Get current user
 router.get('/me', async (req, res) => {
