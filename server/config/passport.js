@@ -13,7 +13,6 @@ passport.use(new GoogleStrategy({
       let user = await User.findOne({ googleId: profile.id });
       
       if (!user) {
-        // Try to find user by email if they previously registered via email
         user = await User.findOne({ email: profile.emails[0].value });
         
         if (user) {
